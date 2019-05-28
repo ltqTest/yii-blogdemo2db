@@ -134,7 +134,7 @@ class Post extends \yii\db\ActiveRecord
      */
     public function getUrl()
     {
-        return Yii::$app->urlManager->createUrl(['post/index', 'id' => $this->id, 'title' => $this->title]);
+        return Yii::$app->urlManager->createUrl(['post/detail', 'id' => $this->id, 'title' => $this->title]);
     }
 
     /**

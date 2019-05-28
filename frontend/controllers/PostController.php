@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use common\models\User;
 use common\models\Comment;
 use common\models\Tag;
 use Yii;
@@ -16,6 +17,8 @@ use yii\filters\VerbFilter;
  */
 class PostController extends Controller
 {
+    public $added = 0;//提交评论标志[0:未提交;1:提交]
+
     /**
      * {@inheritdoc}
      */
@@ -127,5 +130,34 @@ class PostController extends Controller
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    public function actionDetail($id)
+    {
+        $model = $this->findModel($id);
+        $tags = Tag::findTagWeights();
+        $recentComments = Comment::findRecentComments();
+
+        $userMe = User::findOne(Yii::$app->user->id);
+        $commentModel = new Comment();
+        $commentModel->email = $userMe->email;
+        $commentModel->userid = $userMe->id;
+
+        // 提交评论
+        if ($commentModel->load(Yii::$app->request->post())) {
+            $commentModel->status = 1;
+            $commentModel->post_id = $id;
+            if ($commentModel->save()) {
+                $this->added = 1;
+            }
+        }
+
+        return $this->render('detail', [
+            'model' => $model,
+            'tags' => $tags,
+            'recentComments' => $recentComments,
+            'commentModel' => $commentModel,
+            'added' => $this->added,
+        ]);
     }
 }
