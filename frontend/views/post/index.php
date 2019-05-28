@@ -60,7 +60,9 @@ $this->params['breadcrumbs'][] = $this->title;
                     <li class="list-group-item">
                         <span class="glyphicon glyphicon-comment" aria-hidden="true"></span>&nbsp;&nbsp;最近回复
                     </li>
-                    <li class="list-group-item">搜索框</li>
+                    <li class="list-group-item">
+                        <?= \frontend\components\RctReplyWidget::widget(['recentComments' => $recentComments]) ?>
+                    </li>
                 </ul>
             </div>
         </div>
