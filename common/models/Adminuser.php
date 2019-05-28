@@ -3,49 +3,31 @@
 namespace common\models;
 
 use Yii;
-use yii\base\NotSupportedException;
-use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
 
 /**
- * User model
+ * This is the model class for table "admin-user".
  *
- * @property integer $id
+ * @property int $id
  * @property string $username
- * @property string $password_hash
- * @property string $password_reset_token
- * @property string $verification_token
+ * @property string $nickname
+ * @property string $password
  * @property string $email
+ * @property string $profile
+ * @property string $password_hash
  * @property string $auth_key
- * @property integer $status
- * @property integer $created_at
- * @property integer $updated_at
- * @property string $password write-only password
+ * @property string $password_reset_token
+ * @property Post[] $posts
  */
-class User extends ActiveRecord implements IdentityInterface
+class Adminuser extends ActiveRecord implements IdentityInterface
 {
-    const STATUS_DELETED = 0;
-    const STATUS_INACTIVE = 9;
-    const STATUS_ACTIVE = 10;
-
-
     /**
      * {@inheritdoc}
      */
     public static function tableName()
     {
-        return '{{%user}}';
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function behaviors()
-    {
-        return [
-            TimestampBehavior::className(),
-        ];
+        return 'adminuser';
     }
 
     /**
@@ -54,12 +36,12 @@ class User extends ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            ['status', 'default', 'value' => self::STATUS_INACTIVE],
-            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_INACTIVE, self::STATUS_DELETED]],
-            [['email'], 'unique'],
-            [['email'], 'required'],
-            [['email'], 'email'],
-
+            [['username', 'nickname', 'password', 'email', 'password_hash', 'auth_key'], 'required'],
+            [['profile'], 'string'],
+            [['profile'], 'string'],
+            [['username', 'nickname', 'password', 'email'], 'string', 'max' => 128],
+            [['password_hash', 'password_reset_token'], 'string', 'max' => 255],
+            [['auth_key'], 'string', 'max' => 32],
         ];
     }
 
@@ -71,14 +53,22 @@ class User extends ActiveRecord implements IdentityInterface
         return [
             'id' => 'ID',
             'username' => '用户名',
-            'auth_key' => 'Auth Key',
-            'password_hash' => 'Password Hash',
-            'password_reset_token' => 'Password Reset Token',
+            'nickname' => '昵称',
+            'password' => 'Password',
             'email' => 'Email',
-            'status' => '状态',
-            'created_at' => '创建时间',
-            'updated_at' => '修改时间',
+            'profile' => '简介',
+            'password_hash' => 'Password Hash',
+            'auth_key' => 'Auth Key',
+            'password_reset_token' => 'Password Reset Token',
         ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPosts()
+    {
+        return $this->hasMany(Post::className(), ['author_id' => 'id']);
     }
 
     /**
@@ -86,7 +76,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return static::findOne(['id' => $id, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['id' => $id]);
     }
 
     /**
@@ -105,7 +95,7 @@ class User extends ActiveRecord implements IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+        return static::findOne(['username' => $username]);
     }
 
     /**
@@ -229,28 +219,5 @@ class User extends ActiveRecord implements IdentityInterface
     public function removePasswordResetToken()
     {
         $this->password_reset_token = null;
-    }
-
-    public function getComments()
-    {
-        return $this->hasMany(Comment::className(), ['userid' => 'id']);
-    }
-
-    /**
-     * 用于前台页面[用户资料修改页面user/_form]状态一栏的样式控制
-     * @return array
-     */
-    public static function allStatus()
-    {
-        return [self::STATUS_ACTIVE => '正常', self::STATUS_DELETED => '已删除'];
-    }
-
-    /**
-     * 用于前台页面[用户管理页面user/index]状态一栏的样式控制
-     * @return string
-     */
-    public function getStatusStr()
-    {
-        return $this->status == self::STATUS_ACTIVE ? '正常' : '已删除';
     }
 }
