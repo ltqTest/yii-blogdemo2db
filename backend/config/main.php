@@ -10,6 +10,7 @@ return [
     'id' => 'app-backend',
     'basePath' => dirname(__DIR__),
     'controllerNamespace' => 'backend\controllers',
+    'defaultRoute' => 'post/index',
     'bootstrap' => ['log'],
     'language' => 'zh-CN',
     'modules' => [],

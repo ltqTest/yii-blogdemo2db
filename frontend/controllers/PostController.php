@@ -134,16 +134,18 @@ class PostController extends Controller
 
     public function actionDetail($id)
     {
+        // 准备数据
         $model = $this->findModel($id);
         $tags = Tag::findTagWeights();
         $recentComments = Comment::findRecentComments();
 
+        // 获取当前用户信息
         $userMe = User::findOne(Yii::$app->user->id);
         $commentModel = new Comment();
         $commentModel->email = $userMe->email;
         $commentModel->userid = $userMe->id;
 
-        // 提交评论
+        // 提交评论处理
         if ($commentModel->load(Yii::$app->request->post())) {
             $commentModel->status = 1;
             $commentModel->post_id = $id;

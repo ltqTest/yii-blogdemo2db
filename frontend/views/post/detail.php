@@ -32,29 +32,30 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="nav">
                 <?= Html::tag('span', '', ['class' => 'glyphicon glyphicon-tags', 'aria-hidden' => 'true']) ?>
 
-                <?= implode(', ', $model->tagLinks) // Getter                         ?>
+                <?= implode(', ', $model->tagLinks) // Getter                               ?>
                 <br>
-                <?= Html::a("评论({$model->commentCount})", $model->url . '#comments') // Getter                      ?>
+                <?= Html::a("评论({$model->commentCount})", $model->url . '#comments') // Getter                            ?>
                 <?= Html::tag('span', '最后修改时间：' . date('Y-m-d H:i:s', $model->update_time)) ?>
             </div>
 
             <div class="comment">
                 <?php if ($added) { ?>
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <?= Html::tag('strong', '谢谢您的回复!我们会尽快审核后发布出来.') ?>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?= Html::tag('span', date('Y-m-d H:i:s', $model->create_time), ['class' => 'glyphicon glyphicon-time', 'aria-hidden' => 'true']) ?>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <?= Html::tag('span', $model->author->nickname, ['class' => 'glyphicon glyphicon-user', 'aria-hidden' => 'true']) ?>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                    <div class="alert alert-warning alert-dismissible" role="alert">
+                        <strong>谢谢您的回复!我们会尽快审核后发布出来.</strong>
+                        <?= Html::tag('p', nl2br($commentModel->content)) ?>
+                        <?= Html::tag('span', date('Y-m-d H:i:s', $model->create_time), ['class' => 'glyphicon glyphicon-time', 'aria-hidden' => 'true']) ?>
+                        <?= Html::tag('span', $model->author->nickname, ['class' => 'glyphicon glyphicon-user', 'aria-hidden' => 'true']) ?>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
                     </div>
+
                 <?php } ?>
 
                 <?php if ($model->commentCount >= 1): ?>
                     <h5><?= $model->commentCount . '条评论'; ?></h5>
                     <?= $this->render('_comment', [
                         'post' => $model,
-                        'comments' => $model->comments,
+                        'comments' => $model->activeComments,
                     ]); ?>
                 <?php endif; ?>
                 <h2>发表评论</h2>
@@ -62,7 +63,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 $postComment = new \common\models\Comment();
                 echo $this->render('_guestform', [
                     'id' => $model->id,
-                    'postModel' => $postComment
+                    'commentModel' => $commentModel,
                 ]);
                 ?>
             </div>
