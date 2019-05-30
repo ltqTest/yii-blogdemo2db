@@ -30,7 +30,21 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="searchbox">
                 <ul class="list-group">
                     <li class="list-group-item">
-                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;&nbsp;查找文章
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;&nbsp;查找文章(
+                        <?php
+                        /* 数据缓存示例代码
+                        $data = Yii::$app->cache->get('postCount');
+                        if ($data === false) {
+                            $data = \common\models\Post::find()->count();
+                            $dependency = new \yii\caching\DbDependency(['sql' => 'SELECT COUNT(id) FROM post']);
+                            sleep(5);
+                            Yii::$app->cache->set('postCount', $data, 60, $dependency);//设置缓存60s后过去
+                        }
+                        echo $data;
+                        */
+                        ?>
+                        )
+                        <?= \common\models\Post::find()->count(); ?>
                     </li>
                     <li class="list-group-item">
                         <form class="form-inline" action="index.php?r=post/index" id="w0" method="get">
@@ -50,6 +64,15 @@ $this->params['breadcrumbs'][] = $this->title;
                         <span class="glyphicon glyphicon-tags" aria-hidden="true"></span>&nbsp;&nbsp;标签云
                     </li>
                     <li class="list-group-item">
+                        <?php
+                        /* 片段缓存示例代码
+                        $dependency = new \yii\caching\DbDependency(['sql' => 'SELECT COUNT(id)  FROM post']);
+                        if ($this->beginCache('cache', ['dependency' => $dependency])) {
+                            echo \frontend\components\TagsCloudWidget::widget(['tags' => $tags]);
+                            $this->endCache();
+                        }
+                        */
+                        ?>
                         <?= \frontend\components\TagsCloudWidget::widget(['tags' => $tags]) ?>
                     </li>
                 </ul>

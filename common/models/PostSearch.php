@@ -55,7 +55,7 @@ class PostSearch extends Post
             'pagination' => ['pageSize' => 5],
             'sort' => [
                 'defaultOrder' => [
-                    'id' => SORT_ASC,
+                    'id' => SORT_DESC,
                 ],
                 // 指定哪些字段可以排序
 //                'attributes' => ['id', 'title'],
